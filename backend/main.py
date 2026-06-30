@@ -65,9 +65,15 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # ── CORS ──────────────────────────────────────────────────────────────────────
+origins = settings.origins_list
+# Explicitly guarantee the production Vercel frontend is allowed
+prod_origin = "https://truthlens-sage.vercel.app"
+if prod_origin not in origins:
+    origins.append(prod_origin)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins     = settings.origins_list,
+    allow_origins     = origins,
     allow_credentials = True,
     allow_methods     = ["GET", "POST", "DELETE", "OPTIONS"],
     allow_headers     = ["*"],
