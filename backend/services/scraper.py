@@ -469,7 +469,7 @@ async def scrape_with_httpx(url: str) -> dict:
     async with httpx.AsyncClient(
         headers=headers,
         follow_redirects=True,
-        timeout=90.0, # ScraperAPI render takes 30-60+ seconds
+        timeout=25.0, # Fail faster so we fall back to Demo Mode instead of timing out the frontend
         proxy=proxy,
     ) as client:
         resp = await client.get(target_url)
