@@ -7,15 +7,26 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 const client = axios.create({
   baseURL: BASE_URL,
-  timeout: 90_000,   // scraping can take time
+  timeout: 120_000,  // 120s: scraping + Render free-tier cold start (~60s wake-up)
   headers: { "Content-Type": "application/json" },
 });
+
+/** Wake up the Render free-tier server before a real request */
+async function warmUpServer(): Promise<void> {
+  try {
+    await axios.get(`${BASE_URL}/health`, { timeout: 60_000 });
+  } catch {
+    // ignore — if it's already awake this is instant; if cold, it'll wake
+  }
+}
 
 // ── Analyze ──────────────────────────────────────────────────────────────────
 
 export async function analyzeProduct(
   url: string
 ): Promise<AnalyzeResponse> {
+  // Wake the Render free-tier server before the real (slow) request
+  await warmUpServer();
   try {
     const { data } = await client.post<AnalyzeResponse>("/analyze", { url });
     return data;
