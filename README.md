@@ -13,17 +13,7 @@
 
 TruthLens is a full-stack, production-ready AI application designed for e-commerce shoppers in India. It scrapes product reviews, performs analytical anomaly detection using statistical models, and aggregates findings with an LLM-powered verdict to explain review manipulation patterns in plain, understandable language.
 
----
 
-## 🚀 Production Optimizations (Recent Fixes)
-
-To ensure high availability and flawless deployments on **Render (Free Tier)** and **Vercel**, we implemented the following production optimizations:
-
-* **⚡ Lightweight Docker Footprint**: Stripped heavy, unused libraries (e.g., PyTorch, Celery, Pandas) from the backend. This reduced the Docker container size from **~2.5GB to ~200MB**, allowing successful builds on Render's free tier without hitting the 10-minute timeout or the 512MB RAM Out-Of-Memory (OOM) threshold.
-* **🛡️ CORS Preflight Alignment**: Standardized all frontend endpoints (specifically `POST /analyze/`) to include a trailing slash. This directly matches FastAPI's route registration pattern and prevents the browser's CORS preflight request (`OPTIONS`) from failing with a `405 Method Not Allowed` redirect error.
-* **🔄 Auto-Warm-Up Routine**: Configured a proactive warm-up request to the `/health` endpoint upon page load to automatically wake up the sleeping Render backend instance before a user runs a scan, avoiding frontend query timeouts.
-
----
 
 ## ✨ Key Features
 
