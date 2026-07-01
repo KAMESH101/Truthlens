@@ -28,7 +28,7 @@ export async function analyzeProduct(
   // Wake the Render free-tier server before the real (slow) request
   await warmUpServer();
   try {
-    const { data } = await client.post<AnalyzeResponse>("/analyze", { url });
+    const { data } = await client.post<AnalyzeResponse>("/analyze/", { url });
     return data;
   } catch (err) {
     const axiosErr = err as AxiosError<AnalyzeError>;
