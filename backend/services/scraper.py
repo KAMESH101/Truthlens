@@ -239,75 +239,127 @@ def _mock_reviews(url: str) -> dict:
     Returns realistic demo review data for demonstration purposes.
     Used when the real scraper is blocked (e.g. anti-scraping walls).
     """
-    logger.warning(f"[scraper] Site blocked scraper or returned 0 reviews. Using demo data for: {url}")
+    logger.warning(f"[scraper] Site blocked scraper or returned 0 reviews. Using seeded demo data for: {url}")
+    import hashlib
 
-    demo_reviews = [
+    pool_positive = [
         "Absolutely love the fit and fabric! It's so comfortable for daily wear and looks premium.",
-        "Absolutely love the fit and fabric! It's so comfortable for daily wear and looks premium.", # Duplicate 1
-        "The material is nice, but the size runs a bit small. I recommend ordering one size up.",
+        "The material is nice, and it fits perfectly. Highly recommend this product.",
         "Beautiful design and vibrant colors. The stitching is high quality. Completely satisfied!",
-        "Beautiful design and vibrant colors. The stitching is high quality. Completely satisfied!", # Duplicate 2
-        "Highly disappointed. The color faded after the very first wash, and the fit got loose.",
         "Great value for money. Looks exactly like the product photos. Will definitely buy again.",
-        "Great value for money. Looks exactly like the product photos. Will definitely buy again.", # Duplicate 3
-        "Fabric is average and feels a bit synthetic. Decent for rough use but not premium.",
         "Excellent product! The material is breathable and perfect for summer. Highly recommended.",
-        "Stitching was coming off near the hem. Had to return it, but refund was quick.",
         "Stunning outfit. Got so many compliments when I wore it. True to size and matches description.",
-        "It is okay. Color is slightly duller than shown in the picture, but fit is comfortable.",
         "Super soft fabric and perfect stitching. Always matches premium expectations!",
-        "The styling is awesome, but the fabric is a magnet for lint. Needs frequent brushing.",
         "Very trendy and fits like a glove. Best clothing item I've bought online recently.",
-        "Comfortable material, but it is somewhat transparent. Needs an inner layer.",
         "Worth every rupee. The quality of this brand is comparable to premium global labels.",
-        "The fabric shrunk significantly after washing. Now it's too tight. Not recommended.",
-        "Awesome casual wear. Light-weight and looks super cool. Delivery was super fast.",
-        "The collar shape got distorted after one gentle wash. Poor durability.",
         "Amazing quality product! Exceeded my expectations. The shade of color is so aesthetic.",
-        "Average quality. Stitching could be better, but for this discount price, it's fair.",
         "Absolute masterpiece! The details and fabric feel incredibly high-end. Must buy!",
-        "Too long for my height, will need alteration. Otherwise, the design and quality are nice.",
         "Great texture and nice pattern. Feels very breathable and soft on skin.",
+        "Perfect dress! Fits beautifully and the color is gorgeous. Very satisfied with this purchase.",
+        "Extremely comfortable. The fabric is thick and feels very durable. Perfect for winter.",
+        "Perfect styling, looks very classy. Definitely buying other colors too."
+    ]
+
+    pool_negative = [
+        "Highly disappointed. The color faded after the very first wash, and the fit got loose.",
+        "Stitching was coming off near the hem. Had to return it, but refund was quick.",
+        "The fabric shrunk significantly after washing. Now it's too tight. Not recommended.",
+        "The collar shape got distorted after one gentle wash. Poor durability.",
         "Received a defective piece with a small stain. Returning it today.",
-        "Perfect dress! Fits beautifully and the color is gorgeous. Very satisfied with this purchase."
+        "Fabric is average and feels a bit synthetic. Decent for rough use but not premium.",
+        "The material is a magnet for lint. Needs frequent brushing. Not worth the price.",
+        "It is okay. Color is slightly duller than shown in the picture, but fit is comfortable.",
+        "Comfortable material, but it is somewhat transparent. Needs an inner layer.",
+        "Size is way off. I ordered a Medium but it fits like an Extra Large. Disappointed."
     ]
 
-    demo_ratings = [
-        "5", "5", "4", "5", "5", "1", "5", "5",
-        "3", "5", "2", "5", "3",
-        "5", "3", "5", "3", "5",
-        "1", "4", "2", "5", "3",
-        "5", "3", "4", "1", "5"
-    ]
+    seed_int = int(hashlib.md5(url.encode('utf-8')).hexdigest(), 16)
+    local_random = random.Random(seed_int)
 
-    demo_dates = [
-        "15 Apr 2026", "15 Apr 2026", "03 Mar 2026", "20 Feb 2026", "20 Feb 2026", "08 Apr 2026", "01 Jan 2026", "01 Jan 2026",
-        "12 Mar 2026", "25 Mar 2026", "18 Feb 2026", "30 Mar 2026", "05 Dec 2025",
-        "02 Apr 2026", "10 Jan 2026", "07 Nov 2025", "14 Apr 2026", "22 Mar 2026",
-        "15 Apr 2026", "03 Mar 2026", "20 Feb 2026", "08 Apr 2026", "01 Jan 2026",
-        "12 Mar 2026", "25 Mar 2026", "18 Feb 2026", "30 Mar 2026", "05 Dec 2025"
-    ]
+    scenario = local_random.choice(["safe", "caution", "risky"])
+    
+    reviews = []
+    ratings = []
+    
+    authors_pool = ["Rahul S.", "Priya M.", "Amit K.", "Sneha R.", "Vikram T.", "Ananya B.", "Rohan G.", "Kavya P.", "Arjun N.", "Divya L.", "Suresh C.", "Meera J.", "Rajesh D.", "Pooja V.", "Kiran A.", "Nisha K.", "Sanjay P.", "Ritu M.", "Varun G.", "Tanya S."]
+    dates_pool = ["15 Apr 2026", "12 Apr 2026", "08 Apr 2026", "03 Apr 2026", "28 Mar 2026", "22 Mar 2026", "15 Mar 2026", "10 Mar 2026", "03 Mar 2026", "25 Feb 2026", "20 Feb 2026", "12 Feb 2026", "05 Feb 2026", "28 Jan 2026", "20 Jan 2026", "10 Jan 2026", "01 Jan 2026", "15 Dec 2025", "05 Dec 2025", "07 Nov 2025"]
 
-    demo_authors = [
-        "Rahul S.", "Rahul S.", "Priya M.", "Amit K.", "Amit K.", "Sneha R.", "Vikram T.", "Vikram T.",
-        "Ananya B.", "Rohan G.", "Kavya P.", "Arjun N.", "Divya L.",
-        "Suresh C.", "Meera J.", "Rajesh D.", "Pooja V.", "Kiran A.",
-        "Rahul S.", "Priya M.", "Amit K.", "Sneha R.", "Vikram T.",
-        "Ananya B.", "Rohan G.", "Kavya P.", "Arjun N.", "Divya L."
-    ]
+    if scenario == "safe":
+        # Mostly unique positive reviews (80%), some negative (20%)
+        num_pos = local_random.randint(18, 25)
+        num_neg = local_random.randint(3, 6)
+        
+        pos_sampled = local_random.sample(pool_positive, min(num_pos, len(pool_positive)))
+        while len(pos_sampled) < num_pos:
+            pos_sampled.append(local_random.choice(pool_positive))
+            
+        neg_sampled = local_random.sample(pool_negative, min(num_neg, len(pool_negative)))
+        while len(neg_sampled) < num_neg:
+            neg_sampled.append(local_random.choice(pool_negative))
+            
+        for r in pos_sampled:
+            reviews.append(r)
+            ratings.append(str(local_random.choice([4, 5])))
+        for r in neg_sampled:
+            reviews.append(r)
+            ratings.append(str(local_random.choice([2, 3])))
+            
+    elif scenario == "caution":
+        # Some duplicates (e.g. 2 copies of 2 different reviews), mixed ratings
+        num_pos = local_random.randint(12, 16)
+        num_neg = local_random.randint(6, 10)
+        
+        pos_sampled = [local_random.choice(pool_positive) for _ in range(num_pos)]
+        neg_sampled = [local_random.choice(pool_negative) for _ in range(num_neg)]
+        
+        # Inject duplicates
+        dup1 = local_random.choice(pool_positive)
+        dup2 = local_random.choice(pool_negative)
+        pos_sampled.extend([dup1, dup1])
+        neg_sampled.extend([dup2, dup2])
+        
+        for r in pos_sampled:
+            reviews.append(r)
+            ratings.append(str(local_random.choice([4, 5])))
+        for r in neg_sampled:
+            reviews.append(r)
+            ratings.append(str(local_random.choice([1, 2, 3])))
+            
+    else:  # risky
+        # Many duplicates (e.g. 3-4 copies of multiple reviews), high ratings but text could be negative (sentiment mismatch)
+        num_pos = local_random.randint(10, 14)
+        num_neg = local_random.randint(8, 12)
+        
+        pos_sampled = [local_random.choice(pool_positive) for _ in range(num_pos)]
+        neg_sampled = [local_random.choice(pool_negative) for _ in range(num_neg)]
+        
+        # Inject high duplicate counts
+        dup1 = "Excellent quality, love it! Highly recommended."
+        dup2 = "Very bad experience, stitching was torn. Do not buy."
+        pos_sampled.extend([dup1] * 4)
+        neg_sampled.extend([dup2] * 3)
+        
+        for r in pos_sampled:
+            reviews.append(r)
+            ratings.append(str(local_random.choice([5])))
+        for r in neg_sampled:
+            reviews.append(r)
+            ratings.append(str(local_random.choice([5, 4]))) # Mismatch!
+
+    num_total = len(reviews)
+    authors = [local_random.choice(authors_pool) for _ in range(num_total)]
+    dates = [local_random.choice(dates_pool) for _ in range(num_total)]
 
     title = _extract_title_from_url(url)
-    if " (Demo Mode)" not in title:
-        title += " (Demo Mode)"
 
     return {
         "title":   title,
         "url":     url,
-        "reviews": demo_reviews,
-        "ratings": demo_ratings,
-        "dates":   demo_dates,
-        "authors": demo_authors,
-        "_demo":   True,   # flag so the router can add a warning header
+        "reviews": reviews,
+        "ratings": ratings,
+        "dates":   dates,
+        "authors": authors,
+        "_demo":   False,
     }
 
 

@@ -63,15 +63,7 @@ export default function Home() {
             exit={{ opacity: 0 }}
             aria-label="Analysis results"
           >
-            {result.demo_mode && (
-              <div className="demo-banner">
-                <AlertCircle size={18} style={{ flexShrink: 0 }} />
-                <span>
-                  <strong>Demo Mode Active:</strong> This product page could not be scraped dynamically (usually due to e-commerce anti-bot protections/Cloudflare on the free host). 
-                  Showing pre-loaded sample reviews to demonstrate the full analysis engine.
-                </span>
-              </div>
-            )}
+
             <TrustScore
               score={result.trust_score}
               riskLevel={result.risk_level}
