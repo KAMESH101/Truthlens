@@ -9,9 +9,9 @@ import clsx from "clsx";
 const SUPPORTED_PLATFORMS = [
   { name: "Myntra",           domain: "myntra.com",          color: "#FF3F6C" },
   { name: "Ajio",             domain: "ajio.com",            color: "#E94560" },
-  { name: "Nykaa Fashion",    domain: "nykaa.com",           color: "#FC2779" },
+  { name: "Nykaa Fashion",    domain: "nykaa",               color: "#FC2779" },
   { name: "The Souled Store", domain: "thesouledstore.com",  color: "#1A1A2E" },
-  { name: "Snitch",           domain: "snitch.co.in",        color: "#000000" },
+  { name: "Snitch",           domain: "snitch.co",           color: "#000000" },
   { name: "Bewakoof",         domain: "bewakoof.com",        color: "#F7C300" },
   { name: "Bonkers Corner",   domain: "bonkerscorner.com",   color: "#FF6B35" },
   { name: "Tata CLiQ Fashion","domain": "tatacliq.com",      color: "#4B1E7F" },

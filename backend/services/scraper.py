@@ -38,7 +38,9 @@ SUPPORTED_DOMAINS = [
     "myntra.com",
     "ajio.com",
     "nykaa.com",
+    "nykaafashion.com",
     "thesouledstore.com",
+    "snitch.co",
     "snitch.co.in",
     "bewakoof.com",
     "bonkerscorner.com",
@@ -379,7 +381,10 @@ async def scrape_with_playwright(url: str) -> dict:
     title_url = None
 
     async with async_playwright() as p:
-        launch_args = {"headless": True}
+        launch_args = {
+            "headless": True,
+            "args": ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
+        }
         if settings.use_proxy and settings.proxy_url:
             launch_args["proxy"] = {"server": settings.proxy_url}
 
@@ -502,10 +507,7 @@ async def scrape_product(url: str, retries: int = 1) -> dict:
     import sys
     last_err = None
 
-    # Skip Playwright on Windows due to asyncio subprocess NotImplementedError
-    skip_playwright = sys.platform == 'win32'
-    if skip_playwright:
-        logger.info("[scraper] Windows detected — skipping Playwright, using httpx directly")
+    skip_playwright = False
 
     for attempt in range(retries):
         if not skip_playwright:
