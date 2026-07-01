@@ -3,6 +3,16 @@
 
 > We don't just detect fake reviews — we explain them.
 
+
+---
+
+### 🚀 Production Deployment & Optimization Fixes
+
+To ensure seamless production hosting on Render (Free Tier) and Vercel, the following key optimizations were implemented:
+- **Lightweight Render Container**: Cleaned up `backend/requirements.txt` by removing heavy, unused dependencies (`torch`, `sentence-transformers`, `celery`, `pandas`). This shrunk the build size from ~2.5GB to ~200MB, successfully preventing Render's 10-minute build timeouts and 512MB RAM Out-Of-Memory (OOM) crashes.
+- **CORS Preflight Alignment**: Standardized all frontend endpoints (specifically `POST /analyze/`) to use trailing slashes. This aligns with FastAPI's prefix routing structure and prevents the browser's CORS preflight request (`OPTIONS`) from failing with a `405 Method Not Allowed` redirect error.
+- **Cold-Start Wake-up Call**: Configured a proactive warm-up request to the `/health` endpoint upon page load to spin up the sleeping Render instance before the user runs a search, avoiding frontend query timeouts.
+
 ---
 
 ## Stack
