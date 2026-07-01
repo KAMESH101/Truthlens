@@ -238,118 +238,128 @@ def _mock_reviews(url: str) -> dict:
     """
     Returns realistic demo review data for demonstration purposes.
     Used when the real scraper is blocked (e.g. anti-scraping walls).
+    The scenario (safe / caution / risky) is deterministically picked from the URL hash,
+    so every distinct product link gives a consistently different result.
     """
-    logger.warning(f"[scraper] Site blocked scraper or returned 0 reviews. Using seeded demo data for: {url}")
+    logger.warning(f"[scraper] Using seeded demo data for: {url}")
     import hashlib
 
-    pool_positive = [
-        "Absolutely love the fit and fabric! It's so comfortable for daily wear and looks premium.",
-        "The material is nice, and it fits perfectly. Highly recommend this product.",
-        "Beautiful design and vibrant colors. The stitching is high quality. Completely satisfied!",
-        "Great value for money. Looks exactly like the product photos. Will definitely buy again.",
-        "Excellent product! The material is breathable and perfect for summer. Highly recommended.",
-        "Stunning outfit. Got so many compliments when I wore it. True to size and matches description.",
-        "Super soft fabric and perfect stitching. Always matches premium expectations!",
-        "Very trendy and fits like a glove. Best clothing item I've bought online recently.",
-        "Worth every rupee. The quality of this brand is comparable to premium global labels.",
-        "Amazing quality product! Exceeded my expectations. The shade of color is so aesthetic.",
-        "Absolute masterpiece! The details and fabric feel incredibly high-end. Must buy!",
-        "Great texture and nice pattern. Feels very breathable and soft on skin.",
-        "Perfect dress! Fits beautifully and the color is gorgeous. Very satisfied with this purchase.",
-        "Extremely comfortable. The fabric is thick and feels very durable. Perfect for winter.",
-        "Perfect styling, looks very classy. Definitely buying other colors too."
+    SAFE_REVIEWS = [
+        "I ordered this shirt last week and I am genuinely impressed by the quality. The fabric is soft, breathable, and does not pill after washing. The fit is true to size. Colors are vibrant and exactly like the photos. Highly recommended for anyone looking for good value.",
+        "Received the package in two days with no damage. The product looks exactly like the listing. The material is comfortable against the skin, not synthetic-feeling at all. I wore it to a casual outing and received multiple compliments. Will definitely be ordering more colors from this brand.",
+        "This is my third purchase from this brand and they continue to exceed expectations. The stitching on this piece is flawless, even around the collar and cuffs. The color has not faded at all even after three machine washes. Great purchase and delivery was super quick.",
+        "Bought this as a gift for my sister and she absolutely loves it. The packaging was neat and the size chart was accurate. She ordered a small which fit her perfectly. The fabric quality feels premium for the price point. We will be shopping here again.",
+        "I was skeptical at first because I had a bad experience with online clothing before, but this product completely changed my opinion. The garment arrived neatly folded, smells fresh, and the color is exactly as shown. After two washes it still looks brand new.",
+        "Excellent quality for the price. I have worn this to the office a few times and it still looks as good as the day I bought it. The material does not wrinkle easily which is a huge plus. The fit is comfortable and not too tight or loose. Would recommend.",
+        "The fabric is incredibly soft and lightweight — perfect for Indian summers. I ordered two pieces and both arrived on time with proper packaging. The colors are vivid and the prints are sharp. No loose threads or stitching issues noticed. This is now my go-to brand.",
+        "Honestly one of the best purchases I have made online in a long time. The product quality is top-notch, the delivery was fast, and the return policy was easy to understand. The sizing was accurate and the fit is flattering. My friends have already asked me where I bought it.",
+        "I have been using this for about a month now and it has held up really well. The fabric is still soft and the color has not faded. The stitching is clean throughout. For the price, this is an absolute steal. I am planning to buy three more in different colors.",
+        "The product arrived in perfect condition. The material is good quality and the workmanship is solid. I appreciate that the measurements listed were accurate. Very happy with the overall experience and will come back for more shopping without any hesitation.",
+        "This shirt fits exactly like I expected and the cotton blend material is very comfortable. I washed it on the gentle cycle and it came out looking perfect. The print is detailed and has not cracked or peeled. Really good quality for this price range.",
+        "Ordered on Monday and it arrived by Wednesday — impressive logistics! The product itself is great. The cut is modern and the fabric is breathable. I wore it for a full day at work and felt comfortable the entire time. No pilling, no shrinkage, no colour bleeding.",
+        "I was a bit worried about the sizing since I am between sizes, but I followed the size guide and it fit perfectly. The fabric feels premium, not the usual cheap polyester you get with budget brands. The colour is a rich, deep shade just like the photos.",
+        "The stitching is really clean and the hem is well-finished. The collar holds its shape even after multiple washes. The fabric is comfortable in both warm and cool weather. I have already ordered two more items from the same brand based on this positive experience.",
+        "This product is a great buy. The material is soft but durable, and the colour is just as shown in the product images. Fits true to size for me. I especially like the attention to detail — the seams are neat and the label is high quality.",
+        "Super comfortable and stylish. I wore this to a casual family gathering and received lots of compliments on it. The fabric does not feel cheap or scratchy at all. Delivery was prompt and the packaging was secure. This brand has earned a loyal customer in me.",
+        "Bought this for a vacation and it was perfect for the warm weather. Light, airy, and stylish. I could pair it with jeans or shorts and it looked great either way. The colour stayed vibrant even after a beach day. Very pleased with this purchase overall.",
+        "The product quality surprised me in the best way. The fabric is thick enough to feel premium but breathable enough for all-day wear. The print is vibrant and detailed. Fits as expected based on the size chart. No complaints at all — highly recommend.",
+        "Really pleased with this purchase. The item arrived faster than expected and was well packaged. The material is soft and comfortable. The colour is accurate to the photos. Fits true to size. Very happy with the value for money and will shop here again.",
+        "One of the better quality items I have bought online recently. The stitching is neat, the fabric is comfortable, and the fit is flattering. I have worn it several times and it still looks as good as when I first opened the package. Excellent price-to-quality ratio.",
+        "Perfectly sized and nicely packaged. The fabric quality is noticeably better than what I have received from other online sellers at this price. It drapes nicely and the colour is rich and uniform. I am impressed and will definitely be ordering more from this collection.",
+        "This is a solid product. Good fabric, accurate sizing, and clean stitching. Nothing flashy but does everything right. The colour did not bleed even when I washed it with other items. For everyday wear, this is an excellent choice and great value for money.",
+        "I bought this based on a friend's recommendation and I am so glad I did. The product quality is very high. The fabric is soft, the fit is spot on, and the colour is vibrant. I have already recommended it to three other friends and they all loved it.",
+        "The product exceeded my expectations. The fit was comfortable and the material felt premium. I wore it for a long day of sightseeing and it held up well without wrinkling or stretching. The colour is accurate to the listing. Very happy with this purchase.",
+        "Impressed by the quality of this item. The fabric is soft, the stitching is clean, and the sizing is accurate. I ordered two different colours and both are equally good. Fast delivery and well-packaged. This brand has won me over completely.",
     ]
 
-    pool_negative = [
-        "Highly disappointed. The color faded after the very first wash, and the fit got loose.",
-        "Stitching was coming off near the hem. Had to return it, but refund was quick.",
-        "The fabric shrunk significantly after washing. Now it's too tight. Not recommended.",
-        "The collar shape got distorted after one gentle wash. Poor durability.",
-        "Received a defective piece with a small stain. Returning it today.",
-        "Fabric is average and feels a bit synthetic. Decent for rough use but not premium.",
-        "The material is a magnet for lint. Needs frequent brushing. Not worth the price.",
-        "It is okay. Color is slightly duller than shown in the picture, but fit is comfortable.",
-        "Comfortable material, but it is somewhat transparent. Needs an inner layer.",
-        "Size is way off. I ordered a Medium but it fits like an Extra Large. Disappointed."
+    CAUTION_REVIEWS = [
+        "The product is decent overall. The fabric feels okay but could be softer for the price. The colour is slightly different from the photos, a bit more muted in person. The fit is acceptable but the shoulders run slightly narrow. Not bad but I expected a bit more.",
+        "Quality is average. The material is a bit synthetic-feeling and not as breathable as I had hoped. The sizing is correct but the cut is not very flattering on me. The stitching looks fine but there was a small loose thread near the collar.",
+        "Mixed feelings about this purchase. On the positive side, delivery was fast and packaging was good. The colour is accurate. However, the fabric shrunk slightly after the first wash even though I followed the care instructions. The fit is now a bit snug.",
+        "It is an okay product for the price. Not outstanding but not terrible either. The print quality is decent but the fabric is a bit thin. The sizing is a touch on the larger side, so you might want to size down. Acceptable for the price.",
+        "Somewhat satisfied with this purchase. The colour and design are nice but the fabric quality is just average. It is comfortable enough for casual wear but not something I would wear to a semi-formal occasion. The stitching is mostly fine with one small issue.",
+        "The product looks good in photos but in person the colour is slightly washed out. The fabric is soft but I have noticed some pilling after just a couple of washes. The fit is accurate to the size chart though. For the price, it is acceptable.",
+        "Received the order on time and the packaging was neat. The product itself is passable — the fabric is comfortable but not premium. There was a minor defect in the print but it is in a spot that is not very visible. Customer service was helpful.",
+        "This is an alright product. Not the best quality I have received from online shopping but not the worst either. The size is accurate and the colour is close to the photos. The fabric could be thicker and more durable. A fair deal overall.",
+        "I have worn this a few times now. The fit is good and the design is attractive. The issue is that the colour faded noticeably after the third wash, more than I expected for a product at this price. Still usable but I expected more durability.",
+        "The item arrived in good condition and looks nice at first glance. The fabric is comfortable enough but not what I would call premium quality. The print is okay but upon close inspection you can see it is not very precise. A mediocre experience overall.",
+        "Decent product for daily casual wear. Nothing spectacular about the quality but it does the job. The sizing is accurate and the fit is comfortable. The colour is a bit different from what is shown online. Worth the price but do not expect luxury quality.",
+        "I have mixed feelings. On one hand, the design is attractive and the fit is correct. On the other hand, the fabric is thinner than expected and I am not sure how well it will hold up over time. Cautiously recommended for occasional use.",
+        "The product is passable. I liked the design and the colour when it arrived. However, after two washes the fabric started to lose its shape slightly. The stitching is still intact but I am not confident about long-term durability.",
+        "Overall an average purchase. The fabric quality is decent but nothing remarkable. The item arrived on time and was packed properly. The colour is close to what was shown but there are slight variations. I might buy basics from this brand but not premium items.",
+        "The product is good for the price but has some minor flaws. The colour is accurate and the sizing is correct. The stitching is neat but the fabric feels slightly thin in places. I have washed it once and it held up fine. A solid budget option.",
     ]
 
-    seed_int = int(hashlib.md5(url.encode('utf-8')).hexdigest(), 16)
+    RISKY_REVIEWS = [
+        "Best product ever purchased online! Cannot believe the quality at this price! Absolutely love it! All my friends are jealous! Will definitely buy more! Best product ever purchased online! Cannot believe the quality! Absolutely love it!",
+        "Amazing in every single way! Quality is outstanding! Price is unbelievable! Delivery was superfast! Amazing in every single way! Quality is outstanding! Price is unbelievable! Delivery was superfast! Buy this immediately!",
+        "Life changing purchase! Exceeded all my expectations in every possible way! You will never regret buying this product! Best in the entire market! Life changing purchase! Exceeded all expectations! You will never regret it!",
+        "Outstanding quality outstanding value outstanding everything! Must buy now without any hesitation! Outstanding quality outstanding value outstanding everything! Must buy now without any hesitation! Best purchase of the year!",
+        "Best product ever purchased! Cannot believe quality at price! Absolutely love! Friends are jealous! Will buy more! Best product ever purchased! Cannot believe quality! Absolutely love it! Five stars always!",
+        "Amazing in every way! Quality is outstanding! Price is unbelievable! Delivery superfast! Amazing in every way! Quality outstanding! Price unbelievable! Delivery superfast! Buy this now without thinking!",
+        "Life changing! Exceeded all expectations! Never regret buying this! Best in market! Life changing! Exceeded all expectations! Never regret buying! Best in market! Outstanding product outstanding brand!",
+        "Outstanding quality and value! Must buy without hesitation! Outstanding quality and value! Must buy without hesitation! Best purchase of my entire life! Blown away completely by quality!",
+        "Best product ever! Love it completely! All friends jealous! Buy more! Best product ever! Love it! Friends jealous! Buy more! Cannot believe quality at this price point! Five stars!",
+        "Amazing quality amazing value amazing delivery! Buy now do not wait! Amazing quality amazing value amazing delivery! Buy now do not wait! Best in the world without any doubt!",
+        "Life changing product exceeded all expectations best in market! Life changing product exceeded all expectations best in market! Must buy immediately! Absolutely blown away!",
+        "Outstanding quality outstanding value best purchase! Outstanding quality outstanding value best purchase! Must buy without hesitation right now! Changed my life forever! Best ever!",
+        "Best product ever purchased online! Love it! Friends jealous! Will buy more! Best product ever purchased online! Love it! Friends jealous! Will buy more! Outstanding in every way!",
+        "Amazing in every single way outstanding quality unbelievable price superfast delivery! Amazing in every single way outstanding quality unbelievable price superfast delivery! Buy immediately!",
+        "Life changing exceeded all expectations never regret it best in market! Life changing exceeded all expectations never regret it best in market! Absolutely blown away by quality!",
+    ]
+
+    seed_int = int(hashlib.md5(url.encode("utf-8")).hexdigest(), 16)
     local_random = random.Random(seed_int)
 
-    scenario = local_random.choice(["safe", "caution", "risky"])
-    
-    reviews = []
-    ratings = []
-    
-    authors_pool = ["Rahul S.", "Priya M.", "Amit K.", "Sneha R.", "Vikram T.", "Ananya B.", "Rohan G.", "Kavya P.", "Arjun N.", "Divya L.", "Suresh C.", "Meera J.", "Rajesh D.", "Pooja V.", "Kiran A.", "Nisha K.", "Sanjay P.", "Ritu M.", "Varun G.", "Tanya S."]
-    dates_pool = ["15 Apr 2026", "12 Apr 2026", "08 Apr 2026", "03 Apr 2026", "28 Mar 2026", "22 Mar 2026", "15 Mar 2026", "10 Mar 2026", "03 Mar 2026", "25 Feb 2026", "20 Feb 2026", "12 Feb 2026", "05 Feb 2026", "28 Jan 2026", "20 Jan 2026", "10 Jan 2026", "01 Jan 2026", "15 Dec 2025", "05 Dec 2025", "07 Nov 2025"]
+    # Weighted: 50% safe, 25% caution, 25% risky
+    scenario = local_random.choice(["safe", "safe", "caution", "risky"])
+
+    authors_pool = [
+        "Rahul S.", "Priya M.", "Amit K.", "Sneha R.", "Vikram T.",
+        "Ananya B.", "Rohan G.", "Kavya P.", "Arjun N.", "Divya L.",
+        "Suresh C.", "Meera J.", "Rajesh D.", "Pooja V.", "Kiran A.",
+        "Nisha K.", "Sanjay P.", "Ritu M.", "Varun G.", "Tanya S.",
+    ]
+    dates_pool = [
+        "15 Apr 2026", "12 Apr 2026", "08 Apr 2026", "03 Apr 2026",
+        "28 Mar 2026", "22 Mar 2026", "15 Mar 2026", "10 Mar 2026",
+        "03 Mar 2026", "25 Feb 2026", "20 Feb 2026", "12 Feb 2026",
+        "05 Feb 2026", "28 Jan 2026", "20 Jan 2026", "10 Jan 2026",
+        "01 Jan 2026", "15 Dec 2025", "05 Dec 2025", "07 Nov 2025",
+    ]
+
+    reviews: list = []
+    ratings: list = []
 
     if scenario == "safe":
-        # Mostly unique positive reviews (80%), some negative (20%)
-        num_pos = local_random.randint(18, 25)
-        num_neg = local_random.randint(3, 6)
-        
-        pos_sampled = local_random.sample(pool_positive, min(num_pos, len(pool_positive)))
-        while len(pos_sampled) < num_pos:
-            pos_sampled.append(local_random.choice(pool_positive))
-            
-        neg_sampled = local_random.sample(pool_negative, min(num_neg, len(pool_negative)))
-        while len(neg_sampled) < num_neg:
-            neg_sampled.append(local_random.choice(pool_negative))
-            
-        for r in pos_sampled:
-            reviews.append(r)
-            ratings.append(str(local_random.choice([4, 5])))
-        for r in neg_sampled:
-            reviews.append(r)
-            ratings.append(str(local_random.choice([2, 3])))
-            
+        pool = list(SAFE_REVIEWS)
+        local_random.shuffle(pool)
+        count = local_random.randint(18, min(24, len(pool)))
+        reviews = pool[:count]
+        ratings = [str(local_random.choice([4, 4, 5, 5, 5])) for _ in reviews]
+
     elif scenario == "caution":
-        # Some duplicates (e.g. 2 copies of 2 different reviews), mixed ratings
-        num_pos = local_random.randint(12, 16)
-        num_neg = local_random.randint(6, 10)
-        
-        pos_sampled = [local_random.choice(pool_positive) for _ in range(num_pos)]
-        neg_sampled = [local_random.choice(pool_negative) for _ in range(num_neg)]
-        
-        # Inject duplicates
-        dup1 = local_random.choice(pool_positive)
-        dup2 = local_random.choice(pool_negative)
-        pos_sampled.extend([dup1, dup1])
-        neg_sampled.extend([dup2, dup2])
-        
-        for r in pos_sampled:
-            reviews.append(r)
-            ratings.append(str(local_random.choice([4, 5])))
-        for r in neg_sampled:
-            reviews.append(r)
-            ratings.append(str(local_random.choice([1, 2, 3])))
-            
+        pool = list(CAUTION_REVIEWS)
+        local_random.shuffle(pool)
+        count = local_random.randint(10, min(14, len(pool)))
+        base = pool[:count]
+        dup1 = local_random.choice(CAUTION_REVIEWS)
+        dup2 = local_random.choice(SAFE_REVIEWS[:8])
+        reviews = base + [dup1, dup1, dup2, dup2]
+        ratings = [str(local_random.choice([3, 4, 5, 4, 3])) for _ in reviews]
+
     else:  # risky
-        # Many duplicates (e.g. 3-4 copies of multiple reviews), high ratings but text could be negative (sentiment mismatch)
-        num_pos = local_random.randint(10, 14)
-        num_neg = local_random.randint(8, 12)
-        
-        pos_sampled = [local_random.choice(pool_positive) for _ in range(num_pos)]
-        neg_sampled = [local_random.choice(pool_negative) for _ in range(num_neg)]
-        
-        # Inject high duplicate counts
-        dup1 = "Excellent quality, love it! Highly recommended."
-        dup2 = "Very bad experience, stitching was torn. Do not buy."
-        pos_sampled.extend([dup1] * 4)
-        neg_sampled.extend([dup2] * 3)
-        
-        for r in pos_sampled:
-            reviews.append(r)
-            ratings.append(str(local_random.choice([5])))
-        for r in neg_sampled:
-            reviews.append(r)
-            ratings.append(str(local_random.choice([5, 4]))) # Mismatch!
+        pool = list(RISKY_REVIEWS)
+        local_random.shuffle(pool)
+        count = local_random.randint(10, min(14, len(pool)))
+        base = pool[:count]
+        spam = local_random.choice(RISKY_REVIEWS)
+        reviews = base + [spam] * 5
+        ratings = [str(local_random.choice([5, 5, 5, 5])) for _ in reviews]
 
     num_total = len(reviews)
     authors = [local_random.choice(authors_pool) for _ in range(num_total)]
     dates = [local_random.choice(dates_pool) for _ in range(num_total)]
-
     title = _extract_title_from_url(url)
 
     return {
